@@ -1,0 +1,125 @@
+0. Contents
+===========
+ 
+ 1. Creation and initialization of the database cluster
+ 2. Creation of the database and the user to work with it
+ 3. Backup and restore
+
+
+1. Creation and initialization of the database cluster
+======================================================
+
+All data has as propietary the UNIX user that runs the following
+commands. The postgres server is also run by this user. An SQL
+superuser of the cluster is created with the same name as the UNIX
+user. He needs nothing else than his UNIX password to autenticate as a
+DB user.
+
+Only local connections are allowed with the following commands (and is
+the default in PostgreSQL).
+
+$ mkdir local/guia
+$ mkdir local/guia/data
+
+Cluster creation:
+
+-D dir: where data is going to be stored.
+
+$ /usr/lib/postgresql/8.4/bin/initdb -D local/guia/data --locale=ca_ES.utf8 --encoding=UTF8
+
+Server startup:
+
+-o options: passes options to 'postgres'.
+
+$ /usr/lib/postgresql/8.4/bin/pg_ctl start -D local/guia/data -l local/guia/data/pgserver.log -o '-h localhost -k /tmp -p 6543'
+$ /usr/lib/postgresql/8.4/bin/pg_ctl status -D local/guia/data
+
+Server stop:
+
+$ /usr/lib/postgresql/8.4/bin/pg_ctl stop -D local/guia/data
+
+This last command, by default, waits until the last client
+disconnects. This behaviour can be changed.
+
+
+2. Creation of the database and the user to work with it
+========================================================
+
+The goal is to have a superuser that owns a database 'guia' and is
+allowed to change the schema (this role is the one implicitly created
+in the previous section) and another user 'guia' that can only change
+the contents of the tables.
+
+Things to keep in mind:
+
+* By default, EXECUTE privilege is granted to PUBLIC for newly created
+  functions.
+
+* You must own the table to use ALTER TABLE.
+
+* You need the CREATE privilege in a database/schema (or own the
+  database/schema) to create tables or other objects into it.
+
+* pg_dump sets the following privileges, at the end: GRANT ALL ON
+  SCHEMA public TO PUBLIC.
+
+* For sequences, USAGE privilege allows the use of the currval and
+  nextval functions.
+
+For all this the strategy followed is to give ALL PRIVILEGES on all
+tables and sequences to role 'guia'.
+
+Create the user 'guia':
+
+-RDS: no allowed to create roles, no allowed to create db, no superuser
+-h /tmp: hostnoame or UNIX-domain socket.
+
+$ /usr/lib/postgresql/8.4/bin/createuser -h /tmp -p 6543 -DRS guia
+
+Create the DB 'guia', owned by the user that runs de cluster server:
+
+$ /usr/lib/postgresql/8.4/bin/createdb -h /tmp -p 6543 guia
+
+To connect to the database 'guia' with psql, we need to do:
+
+As DB superuser:
+
+$ psql -p 6543 -h /tmp guia
+
+As user 'guia':
+
+$ psql -p 6543 -h /tmp -U guia guia
+
+Remove the database:
+
+The server must be running, and this is not necessary if you are going
+to remove the local/guia/data anyway.
+
+$ /usr/lib/postgresql/8.4/bin/dropdb -h /tmp -p 6543 guia
+
+
+3. Backup and restore
+=====================
+
+Backup: 
+
+-n public: only schema 'public' (not necessary).
+--no-owner: no owner stored for objects, then psql will put as owner the one
+  coinciding with the UNIX user (or the one passed with -U).
+-c: Output commands to clean (drop) database objects prior to (the
+  commands for) creating them.
+
+$ pg_dump -p 6543 -h /tmp --schema-only -n public -c --no-owner guia > guia-schema.sql
+$ pg_dump -p 6543 -h /tmp --data-only -n public --no-owner guia > guia-data.sql
+
+Restore:
+
+--single-transaction: If something fails the database is not modified.
+USERNAME: the name of the UNIX user
+
+$ grep -v USERNAME guia-schema.sql | psql -p 6543 -h /tmp --single-transaction guia
+
+Repeatedly execute the following, until only "duplicate key" errors
+occur:
+
+$ psql -p 6543 -h /tmp -U guia < guia-data.sql
