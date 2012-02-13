@@ -70,7 +70,7 @@ main = do
     where
       -- Application is expected to run in src/.
       -- TODO Make it possible to run app in another dir.
-      gladepath = "../data/glade/guia.glade"
+      gladepath = "../glade/guia.glade"
       initialDelay = 200000
       -- We wait at most 10 seconds
       delays = takeWhile (< 10000001) [(2 ^ n) * initialDelay | n <- [0..]]
