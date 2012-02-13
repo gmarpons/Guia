@@ -16,8 +16,8 @@ import Database.HDBC.PostgreSQL
 
 serverExecutable, serverDataDir, serverLogFile :: String
 serverExecutable = "/usr/lib/postgresql/8.4/bin/pg_ctl "
-serverDataDir =    "$HOME/local/guia/data "
-serverLogFile =    "$HOME/local/guia/data/pgserver.log "
+serverDataDir =    "$HOME/Private/guia/data "
+serverLogFile =    "$HOME/Private/guia/data/pgserver.log "
 
 startServer :: IO ()
 startServer = 
