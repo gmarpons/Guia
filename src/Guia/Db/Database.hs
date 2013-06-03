@@ -15,7 +15,7 @@ import Database.HDBC.PostgreSQL
     (Connection, connectPostgreSQL)
 
 serverExecutable, serverDataDir, serverLogFile :: String
-serverExecutable = "/usr/lib/postgresql/8.4/bin/pg_ctl "
+serverExecutable = "/usr/lib/postgresql/9.1/bin/pg_ctl "
 serverDataDir =    "$HOME/Private/guia/data "
 serverLogFile =    "$HOME/Private/guia/data/pgserver.log "
 

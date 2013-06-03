@@ -25,18 +25,18 @@ Cluster creation:
 
 -D dir: where data is going to be stored.
 
-$ /usr/lib/postgresql/8.4/bin/initdb -D Private/guia/data --locale=ca_ES.utf8 --encoding=UTF8
+$ /usr/lib/postgresql/9.1/bin/initdb -D Private/guia/data --locale=ca_ES.utf8 --encoding=UTF8
 
 Server startup:
 
 -o options: passes options to 'postgres'.
 
-$ /usr/lib/postgresql/8.4/bin/pg_ctl start -D Private/guia/data -l Private/guia/data/pgserver.log -o '-h localhost -k /tmp -p 6543'
-$ /usr/lib/postgresql/8.4/bin/pg_ctl status -D Private/guia/data
+$ /usr/lib/postgresql/9.1/bin/pg_ctl start -D Private/guia/data -l Private/guia/data/pgserver.log -o '-h localhost -k /tmp -p 6543'
+$ /usr/lib/postgresql/9.1/bin/pg_ctl status -D Private/guia/data
 
 Server stop:
 
-$ /usr/lib/postgresql/8.4/bin/pg_ctl stop -D Private/guia/data
+$ /usr/lib/postgresql/9.1/bin/pg_ctl stop -D Private/guia/data
 
 This last command, by default, waits until the last client
 disconnects. This behaviour can be changed.
@@ -74,11 +74,11 @@ Create the user 'guia':
 -RDS: no allowed to create roles, no allowed to create db, no superuser
 -h /tmp: hostnoame or UNIX-domain socket.
 
-$ /usr/lib/postgresql/8.4/bin/createuser -h /tmp -p 6543 -DRS guia
+$ /usr/lib/postgresql/9.1/bin/createuser -h /tmp -p 6543 -DRS guia
 
 Create the DB 'guia', owned by the user that runs de cluster server:
 
-$ /usr/lib/postgresql/8.4/bin/createdb -h /tmp -p 6543 guia
+$ /usr/lib/postgresql/9.1/bin/createdb -h /tmp -p 6543 guia
 
 To connect to the database 'guia' with psql, we need to do:
 
@@ -95,7 +95,7 @@ Remove the database:
 The server must be running, and this is not necessary if you are going
 to remove the Private/guia/data anyway.
 
-$ /usr/lib/postgresql/8.4/bin/dropdb -h /tmp -p 6543 guia
+$ /usr/lib/postgresql/9.1/bin/dropdb -h /tmp -p 6543 guia
 
 
 3. Backup and restore
